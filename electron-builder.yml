@@ -1,0 +1,68 @@
+appId: app.pluginCore
+productName: pluginCore
+copyright: Copyright © 2026 CHEN
+compression: maximum
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
+
+directories:
+  output: release
+  buildResources: resources
+
+files:
+  - dist
+  - dist-electron
+  - package.json
+
+afterPack: ./scripts/after-pack.cjs
+
+asar: true
+
+npmRebuild: false
+
+# Windows
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+  requestedExecutionLevel: asInvoker
+  artifactName: ${productName}-${version}-win-${arch}.${ext}
+
+# macOS
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+  icon: resources/icon.icns
+  category: public.app-category.developer-tools
+  artifactName: ${productName}-${version}-mac-${arch}.${ext}
+
+# Linux
+linux:
+  target:
+    - target: AppImage
+      arch:
+        - x64
+  icon: resources/icon.png
+  category: Development
+  artifactName: ${productName}-${version}-linux-${arch}.${ext}
+
+# NSIS 配置 (Windows 安装程序)
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: pluginCore
+  uninstallDisplayName: pluginCore
+  allowElevation: true
+  perMachine: true
+
+# 自动更新配置
+publish:
+  provider: github
+  owner: CHEN
+  repo: PluginCore-React
+  releaseType: draft 
