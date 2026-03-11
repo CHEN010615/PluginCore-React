@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
+import { registerIPCHandlers } from './api'
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
@@ -8,7 +9,7 @@ function createWindow(): BrowserWindow {
     minWidth: 960,
     minHeight: 600,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.ts'),
+      preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
       contextIsolation: true,
       sandbox: false,
@@ -30,6 +31,7 @@ function createWindow(): BrowserWindow {
 
 app.whenReady().then(() => {
   createWindow();
+  registerIPCHandlers();
 });
 
 app.on("activate", () => {

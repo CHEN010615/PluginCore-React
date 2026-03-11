@@ -8,13 +8,19 @@
   "private": true,
   "scripts": {
     "init": "pnpm install && node node_modules/.pnpm/electron@40.8.0/node_modules/electron/install.js",
-    "dev": "vite"
+    "dev": "vite",
+    "build": "vite build && electron-builder",
+    "build:vite": "vite build"
   },
   "dependencies": {
     "electron-store": "^11.0.2",
     "electron-updater": "^6.8.3"
   },
   "devDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.9",
+    "@mui/material": "^7.3.9",
     "@types/node": "^25.3.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
