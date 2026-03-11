@@ -26,6 +26,7 @@ win:
       arch:
         - x64
     - target: portable
+  icon: resources/default/256x256.png
   requestedExecutionLevel: asInvoker
   artifactName: ${productName}-${version}-win-${arch}.${ext}
 
@@ -35,7 +36,7 @@ mac:
     - target: dmg
       arch:
         - x64
-  icon: resources/icon.icns
+  icon: resources/default/icon.icns
   category: public.app-category.developer-tools
   artifactName: ${productName}-${version}-mac-${arch}.${ext}
 
@@ -45,7 +46,7 @@ linux:
     - target: AppImage
       arch:
         - x64
-  icon: resources/icon.png
+  icon: resources/default/512x512.png
   category: Development
   artifactName: ${productName}-${version}-linux-${arch}.${ext}
 
@@ -59,6 +60,8 @@ nsis:
   uninstallDisplayName: pluginCore
   allowElevation: true
   perMachine: true
+  installerIcon: resources/default/256x256.png
+  uninstallerIcon: resources/uninstall/256x256.png
 
 # 自动更新配置
 publish:
