@@ -1,11 +1,12 @@
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
 import { registerIPCHandlers } from './api'
+import { createTray } from './tray'
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1280,
-    height: 800,
+    height: 850,
     minWidth: 960,
     minHeight: 600,
     webPreferences: {
@@ -21,7 +22,7 @@ function createWindow(): BrowserWindow {
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
   } else {
     win.loadFile(join(__dirname, '../../dist/index.html'));
   }
@@ -33,7 +34,9 @@ function createWindow(): BrowserWindow {
 registerIPCHandlers()
 
 app.whenReady().then(() => {
-  createWindow();
+  const window = createWindow();
+  // 创建系统托盘
+  createTray(window);
 });
 
 app.on("activate", () => {
