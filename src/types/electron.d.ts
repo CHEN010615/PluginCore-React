@@ -1,27 +1,13 @@
+import type { Channels } from '@electron/common/channels'
+
 export interface ElectronAPI {
-  invoke: (channel: string, ...args: unknown[]) => Promise<unknown>
-  on: (channel: string, callback: (...args: unknown[]) => void) => (() => void) | undefined
-  once: (channel: string, callback: (...args: unknown[]) => void) => void
-  off: (channel: string, callback?: (...args: unknown[]) => void) => void
-  system: {
-    os: {
-      getInfo: () => Promise<{
-        platform: string
-        version: string
-        arch: string
-      }>
-    }
-    node: {
-      getInfo: () => Promise<{
-        version: string
-        nodeVersion: string
-        v8Version: string
-        uvVersion: string
-      }>
-    }
-  }
-  platform: string
-  isDev: boolean
+  // IPC 通信方法
+  invoke: (channel: Channels, ...args: unknown[]) => Promise<unknown>
+  send: (channel: Channels, ...args: unknown[]) => void
+  on: (channel: Channels, callback: (...args: unknown[]) => void) => () => void
+  once: (channel: Channels, callback: (...args: unknown[]) => void) => void
+  removeListener: (channel: Channels, callback: (...args: unknown[]) => void) => void
+  removeAllListeners: (channel: Channels) => void
 }
 
 declare global {

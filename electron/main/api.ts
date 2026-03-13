@@ -1,47 +1,82 @@
 import { ipcMain } from 'electron'
-import { release } from 'os'
+import os from 'os'
+import { CHANNELS } from '../common/channels'
 
-const API = {
-  system: {
-    os: {
-      getInfo: async () => {
-        return {
-          platform: process.platform,
-          version: release(),
-          arch: process.arch
-        }
-      }
-    },
-    node: {
-      getInfo: async () => {
-        return {
-          version: process.version,
-          nodeVersion: process.versions.node,
-          v8Version: process.versions.v8,
-          uvVersion: process.versions.uv
-        }
-      }
-    }
-  }
-}
+const Store = require('electron-store').default
+const store = new Store()
 
-type APIHandler = (...args: any[]) => Promise<any>
+// 注册所有 IPC 处理器
+export function registerIPCHandlers() {
+  // electron-store 相关
+  ipcMain.handle(CHANNELS.STORE_GET, (_, key: string) => {
+    return store.get(key)
+  })
 
-function isHandler(func: any): func is APIHandler {
-  return typeof func === 'function'
-}
+  ipcMain.handle(CHANNELS.STORE_SET, (_, key: string, value: unknown) => {
+    store.set(key, value)
+  })
 
-function registerHandlers(obj: Record<string, any>, path: string[] = []) {
-  Object.entries(obj).forEach(([key, value]) => {
-    if (isHandler(value)) {
-      const channel = [...path, key].join(':')
-      ipcMain.handle(channel, value)
-    } else if (typeof value === 'object' && value !== null) {
-      registerHandlers(value, [...path, key])
+  ipcMain.handle(CHANNELS.STORE_DELETE, (_, key: string) => {
+    store.delete(key)
+  })
+
+  // electron-updater 相关
+  ipcMain.handle(CHANNELS.UPDATER_CHECK, () => {
+    return 'check'
+  })
+
+  // 系统信息相关
+  ipcMain.handle(CHANNELS.SYSTEM_OS, () => {
+    return {
+      platform: process.platform,
+      arch: process.arch,
+      version: os.version(),
+      release: os.release(),
+      type: os.type()
     }
   })
-}
 
-export function registerIPCHandlers() {
-  registerHandlers(API)
+  ipcMain.handle(CHANNELS.SYSTEM_NODE, () => {
+    return {
+      version: process.versions.node,
+      electron: process.versions.electron,
+      v8: process.versions.v8,
+      uv: process.versions.uv,
+      zlib: process.versions.zlib,
+      openssl: process.versions.openssl
+    }
+  })
+
+  // 系统性能相关
+  ipcMain.handle(CHANNELS.SYSTEM_PERFORMANCE, () => {
+    const cpus = os.cpus()
+    const totalmem = os.totalmem()
+    const freemem = os.freemem()
+    const usedmem = totalmem - freemem
+    
+    return {
+      hostname: os.hostname(),
+      cpu: {
+        model: cpus[0]?.model || 'Unknown',
+        speed: cpus[0]?.speed || 0,
+        cores: cpus.length,
+        usage: cpus.map(cpu => {
+          const total = cpu.times.idle + cpu.times.user + cpu.times.nice + cpu.times.irq + cpu.times.sys
+          const idle = cpu.times.idle
+          return ((total - idle) / total * 100).toFixed(2)
+        })
+      },
+      memory: {
+        total: totalmem,
+        free: freemem,
+        used: usedmem,
+        usagePercent: ((usedmem / totalmem) * 100).toFixed(2)
+      },
+      network: {
+        interfaces: Object.keys(os.networkInterfaces())
+      },
+      uptime: os.uptime(),
+      loadavg: os.loadavg()
+    }
+  })
 }

@@ -1,20 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Box, Typography, Button, Paper, Alert, Chip, Divider, Stack } from '@mui/material'
-import { Computer, Storage, Notifications, Info } from '@mui/icons-material'
+import { Box, Typography, Paper, Alert } from '@mui/material'
+import { Computer, Storage, Info } from '@mui/icons-material'
 
 function App() {
-  const [osInfo, setOsInfo] = useState<{ platform: string; version: string; arch: string } | null>(null)
-  const [nodeInfo, setNodeInfo] = useState<{ version: string; nodeVersion: string; v8Version: string; uvVersion: string } | null>(null)
-  const [notification, setNotification] = useState<string>('')
-  const [loading, setLoading] = useState<{ os: boolean; node: boolean }>({ os: false, node: false })
-  const [error, setError] = useState<{ os: string | null; node: string | null }>({ os: null, node: null })
+  const [osInfo, setOsInfo] = useState<{ platform: string; arch: string; version: string; release: string; type: string } | null>(null)
+  const [performanceInfo, setPerformanceInfo] = useState<{ hostname: string; cpu: { model: string; speed: number; cores: number; usage: string[] }; memory: { total: number; free: number; used: number; usagePercent: string }; network: { interfaces: string[] }; uptime: number; loadavg: number[] } | null>(null)
+  const [nodeInfo, setNodeInfo] = useState<{ version: string; electron: string; type: string } | null>(null)
+  const [loading, setLoading] = useState<{ os: boolean; node: boolean; performance: boolean }>({ os: false, node: false, performance: false })
+  const [error, setError] = useState<{ os: string | null; node: string | null; performance: string | null }>({ os: null, node: null, performance: null })
 
   const handleGetOSInfo = async () => {
     setLoading(prev => ({ ...prev, os: true }))
     setError(prev => ({ ...prev, os: null }))
     try {
-      const info = await window.electronAPI.system.os.getInfo()
-      setOsInfo(info)
+      const info = await window.electronAPI.invoke('system:os')
+      setOsInfo(info as typeof osInfo)
     } catch (err) {
       setError(prev => ({ ...prev, os: '获取操作系统信息失败' }))
     } finally {
@@ -22,12 +22,25 @@ function App() {
     }
   }
 
+  const handleGetPerformanceInfo = async () => {
+    setLoading(prev => ({ ...prev, node: true }))
+    setError(prev => ({ ...prev, node: null }))
+    try {
+      const info = await window.electronAPI.invoke('system:performance')
+      setPerformanceInfo(info as typeof performanceInfo)
+    } catch (err) {
+      setError(prev => ({ ...prev, performance: '获取系统性能信息失败' }))
+    } finally {
+      setLoading(prev => ({ ...prev, node: false }))
+    }
+  }
+
   const handleGetNodeInfo = async () => {
     setLoading(prev => ({ ...prev, node: true }))
     setError(prev => ({ ...prev, node: null }))
     try {
-      const info = await window.electronAPI.system.node.getInfo()
-      setNodeInfo(info)
+      const info = await window.electronAPI.invoke('system:node')
+      setNodeInfo(info as typeof nodeInfo)
     } catch (err) {
       setError(prev => ({ ...prev, node: '获取 Node.js 信息失败' }))
     } finally {
@@ -36,13 +49,10 @@ function App() {
   }
 
   useEffect(() => {
-    const unsubscribe = window.electronAPI.on('system:notification', (data) => {
-      setNotification(`通知：${JSON.stringify(data)}`)
-    })
-
-    return () => {
-      unsubscribe?.()
-    }
+    // 初始化时获取系统信息
+    handleGetOSInfo()
+    handleGetPerformanceInfo()
+    handleGetNodeInfo()
   }, [])
 
   return (
@@ -57,46 +67,11 @@ function App() {
         </Typography>
       </Box>
 
-      {/* 通知区域 */}
-      {notification && (
-        <Alert 
-          severity="info" 
-          sx={{ mb: 3 }}
-          icon={<Notifications />}
-          onClose={() => setNotification('')}
-        >
-          {notification}
-        </Alert>
-      )}
-
       {/* 主要功能按钮 */}
       <Paper sx={{ p: 3, mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" sx={{ mb: 0 }} gutterBottom>
           系统信息查询
         </Typography>
-        <Divider sx={{ mb: 3 }} />
-        <Stack direction="row" spacing={2} useFlexGap flexWrap="wrap">
-          <Button
-            variant="contained"
-            size="large"
-            onClick={handleGetOSInfo}
-            loading={loading.os}
-            startIcon={<Computer />}
-            sx={{ minWidth: 160 }}
-          >
-            获取 OS 信息
-          </Button>
-          <Button
-            variant="outlined"
-            size="large"
-            onClick={handleGetNodeInfo}
-            loading={loading.node}
-            startIcon={<Storage />}
-            sx={{ minWidth: 160 }}
-          >
-            获取 Node 信息
-          </Button>
-        </Stack>
       </Paper>
 
       {/* 信息显示区域 */}
@@ -113,7 +88,7 @@ function App() {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Computer sx={{ mr: 1, color: '#1976d2' }} />
               <Typography variant="h6" fontWeight="bold">
-                操作系统信息
+                操作系统
               </Typography>
             </Box>
             
@@ -127,10 +102,16 @@ function App() {
                   <strong>平台:</strong> {osInfo.platform}
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>架构:</strong> {osInfo.arch}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
                   <strong>版本:</strong> {osInfo.version}
                 </Typography>
                 <Typography variant="body2" sx={{ mb: 1 }}>
-                  <strong>架构:</strong> {osInfo.arch}
+                  <strong>发行版:</strong> {osInfo.release}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  <strong>类型:</strong> {osInfo.type}
                 </Typography>
               </Box>
             ) : (
@@ -140,7 +121,7 @@ function App() {
             )}
           </Paper>
 
-        {/* Node.js 信息卡片 */}
+        {/* 系统性能卡片 */}
         <Paper
           sx={{
             p: 3,
@@ -152,32 +133,53 @@ function App() {
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
             <Storage sx={{ mr: 1, color: '#7b1fa2' }} />
             <Typography variant="h6" fontWeight="bold">
-              Node.js 信息
+              系统信息
             </Typography>
           </Box>
 
-          {error.node && (
-            <Alert severity="error" sx={{ mb: 2 }}>{error.node}</Alert>
+          {error.performance && (
+            <Alert severity="error" sx={{ mb: 2 }}>{error.performance}</Alert>
           )}
 
-          {nodeInfo ? (
+          {performanceInfo ? (
             <Box sx={{ fontFamily: 'monospace', fontSize: '0.9rem' }}>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>版本:</strong> {nodeInfo.version}
+                <strong>主机名:</strong> {performanceInfo.hostname}
               </Typography>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Node.js:</strong> {nodeInfo.nodeVersion}
+                <strong>CPU 型号:</strong> {performanceInfo.cpu.model}
               </Typography>
               <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>V8:</strong> {nodeInfo.v8Version}
+                <strong>CPU 频率:</strong> {performanceInfo.cpu.speed} MHz
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>CPU 核心数:</strong> {performanceInfo.cpu.cores}
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>内存总计:</strong> {(performanceInfo.memory.total / 1024 / 1024 / 1024).toFixed(2)} GB
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>内存可用:</strong> {(performanceInfo.memory.free / 1024 / 1024 / 1024).toFixed(2)} GB
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>内存已用:</strong> {(performanceInfo.memory.used / 1024 / 1024 / 1024).toFixed(2)} GB
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>内存使用率:</strong> {performanceInfo.memory.usagePercent}%
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>系统运行时间:</strong> {(performanceInfo.uptime / 3600).toFixed(2)} 小时
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>系统负载:</strong> {performanceInfo.loadavg.map(l => l.toFixed(2)).join(' / ')}
               </Typography>
               <Typography variant="body2">
-                <strong>Libuv:</strong> {nodeInfo.uvVersion}
+                <strong>网络接口:</strong> {performanceInfo.network.interfaces.join(', ')}
               </Typography>
             </Box>
           ) : (
             <Typography variant="body2" color="text.secondary">
-              点击按钮获取 Node.js 信息
+              点击按钮获取系统性能信息
             </Typography>
           )}
         </Paper>
@@ -199,14 +201,15 @@ function App() {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Info color="action" />
           <Typography variant="body2">
-            <strong>当前平台:</strong> {window.electronAPI.platform}
+            <strong>Node:</strong> {nodeInfo?.version || '未获取'}
           </Typography>
         </Box>
-        <Chip
-          label={window.electronAPI.isDev ? '开发模式' : '生产模式'}
-          color={window.electronAPI.isDev ? 'warning' : 'success'}
-          size="small"
-        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Info color="action" />
+          <Typography variant="body2">
+            <strong>Electron:</strong> {nodeInfo?.electron || '未获取'}
+          </Typography>
+        </Box>
       </Paper>
     </Box>
   )

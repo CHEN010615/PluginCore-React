@@ -29,9 +29,11 @@ function createWindow(): BrowserWindow {
   return win;
 }
 
+// 注册 IPC 处理器
+registerIPCHandlers()
+
 app.whenReady().then(() => {
   createWindow();
-  registerIPCHandlers();
 });
 
 app.on("activate", () => {
