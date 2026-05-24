@@ -1,5 +1,5 @@
-appId: app.pluginCore
-productName: pluginCore
+appId: app.palHub
+productName: palHub
 copyright: Copyright © 2026 CHEN
 compression: maximum
 artifactName: ${productName}-${version}-${os}-${arch}.${ext}
@@ -56,8 +56,8 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: pluginCore
-  uninstallDisplayName: pluginCore
+  shortcutName: PalHub
+  uninstallDisplayName: PalHub
   allowElevation: true
   perMachine: true
   installerIcon: resources/default/256x256.ico
@@ -67,5 +67,5 @@ nsis:
 publish:
   provider: github
   owner: CHEN
-  repo: PluginCore-React
+  repo: Pal-Hub
   releaseType: draft 

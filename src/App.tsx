@@ -60,7 +60,7 @@ function App() {
       {/* 标题区域 */}
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" color="primary">
-          PluginCore-React
+          PAL-HUB
         </Typography>
         <Typography variant="subtitle1" color="text.secondary">
           Electron + React 桌面应用框架

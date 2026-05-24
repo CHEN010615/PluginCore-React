@@ -1,7 +1,7 @@
 {
-  "name": "plugin-core-react",
+  "name": "pal-hub",
   "version": "1.0.0",
-  "description": "Plugin Core React",
+  "description": "Pal Hub",
   "main": "dist-electron/main/index.js",
   "author": "CHEN",
   "license": "MIT",
