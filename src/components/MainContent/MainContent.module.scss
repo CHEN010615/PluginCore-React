@@ -2,9 +2,9 @@
 
 .main {
   margin-left: $sidebar-width;
-  margin-top: $topbar-height;
+  margin-top: calc(#{$titlebar-height} + #{$topbar-height});
   padding: $gutter;
-  height: calc(100vh - #{$topbar-height});
+  height: calc(100vh - #{$titlebar-height} - #{$topbar-height});
   overflow-y: auto;
 }
 

@@ -2,10 +2,10 @@
 
 .sidebar {
   width: $sidebar-width;
-  height: 100vh;
+  height: calc(100vh - #{$titlebar-height});
   position: fixed;
   left: 0;
-  top: 0;
+  top: $titlebar-height;
   background-color: $surface-container;
   border-right: 1px solid rgba($outline-variant, 0.1);
   backdrop-filter: blur(20px);

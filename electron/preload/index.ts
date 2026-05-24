@@ -1,9 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { Channels } from '../common/channels'
 
-// 暴露安全的 API 到渲染进程
 contextBridge.exposeInMainWorld('electronAPI', {
-  // IPC 通信方法
   invoke: (channel: Channels, ...args: unknown[]) => {
     return ipcRenderer.invoke(channel, ...args)
   },
@@ -25,6 +23,22 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   removeAllListeners: (channel: Channels) => {
     ipcRenderer.removeAllListeners(channel)
+  },
+
+  // 窗口控制方法
+  minimize: () => {
+    ipcRenderer.send('window:minimize' as Channels)
+  },
+  maximize: () => {
+    ipcRenderer.send('window:maximize' as Channels)
+  },
+  unmaximize: () => {
+    ipcRenderer.send('window:unmaximize' as Channels)
+  },
+  isMaximized: (): Promise<boolean> => {
+    return ipcRenderer.invoke('window:is-maximized' as Channels)
+  },
+  close: () => {
+    ipcRenderer.send('window:close' as Channels)
   }
 })
-

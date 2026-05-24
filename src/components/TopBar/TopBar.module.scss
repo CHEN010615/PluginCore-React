@@ -3,7 +3,7 @@
 .topbar {
   height: $topbar-height;
   position: fixed;
-  top: 0;
+  top: $titlebar-height;
   right: 0;
   left: $sidebar-width;
   z-index: $z-index-topbar;

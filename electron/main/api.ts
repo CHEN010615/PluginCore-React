@@ -1,9 +1,15 @@
-import { ipcMain } from 'electron'
+import { ipcMain, BrowserWindow } from 'electron'
 import os from 'os'
 import { CHANNELS } from '../common/channels'
 
 const Store = require('electron-store').default
 const store = new Store()
+
+let mainWindow: BrowserWindow | null = null
+
+export function setMainWindow(win: BrowserWindow) {
+  mainWindow = win
+}
 
 // 注册所有 IPC 处理器
 export function registerIPCHandlers() {
@@ -53,7 +59,7 @@ export function registerIPCHandlers() {
     const totalmem = os.totalmem()
     const freemem = os.freemem()
     const usedmem = totalmem - freemem
-    
+
     return {
       hostname: os.hostname(),
       cpu: {
@@ -78,5 +84,26 @@ export function registerIPCHandlers() {
       uptime: os.uptime(),
       loadavg: os.loadavg()
     }
+  })
+
+  // 窗口控制相关
+  ipcMain.on(CHANNELS.WINDOW_MINIMIZE, () => {
+    mainWindow?.minimize()
+  })
+
+  ipcMain.on(CHANNELS.WINDOW_MAXIMIZE, () => {
+    mainWindow?.maximize()
+  })
+
+  ipcMain.on(CHANNELS.WINDOW_UNMAXIMIZE, () => {
+    mainWindow?.unmaximize()
+  })
+
+  ipcMain.handle(CHANNELS.WINDOW_IS_MAXIMIZED, () => {
+    return mainWindow?.isMaximized() ?? false
+  })
+
+  ipcMain.on(CHANNELS.WINDOW_CLOSE, () => {
+    mainWindow?.close()
   })
 }

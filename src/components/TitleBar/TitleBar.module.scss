@@ -1,0 +1,98 @@
+@import '@/styles/variables.scss';
+
+$titlebar-height: 36px;
+
+.titlebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $titlebar-height;
+  z-index: $z-index-topbar + 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $background-dark;
+  border-bottom: 1px solid rgba($outline-variant, 0.15);
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+.dragRegion {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: $spacing-md;
+  -webkit-app-region: drag;
+}
+
+.titleContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoIcon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.appName {
+  font-family: $font-family-display;
+  font-size: $font-size-sm;
+  font-weight: 700;
+  color: $primary-color;
+  letter-spacing: 0.02em;
+}
+
+.version {
+  font-family: $font-family-mono;
+  font-size: 10px;
+  color: rgba($primary-color, 0.45);
+  letter-spacing: 0.08em;
+}
+
+// 窗口控制按钮区域
+.windowControls {
+  display: flex;
+  align-items: stretch;
+  height: 100%;
+  -webkit-app-region: no-drag;
+}
+
+.ctrlBtn {
+  width: 46px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: $on-surface-variant;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
+.btnMinimize:hover {
+  color: $on-surface;
+}
+
+.btnMaximize:hover {
+  color: $on-surface;
+}
+
+.btnClose {
+  &:hover {
+    background-color: #e81123;
+    color: #fff;
+  }
+}

@@ -1,14 +1,16 @@
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
-import { registerIPCHandlers } from './api'
+import { registerIPCHandlers, setMainWindow } from './api'
 import { createTray } from './tray'
 
 function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
-    width: 1280,
-    height: 850,
-    minWidth: 960,
-    minHeight: 600,
+    width: 1600,
+    height: 900,
+    resizable: false,
+    frame: false,
+    transparent: false,
+    backgroundColor: '#081425',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
@@ -18,11 +20,12 @@ function createWindow(): BrowserWindow {
     }
   });
 
+  setMainWindow(win)
+
   win.show();
 
   if (process.env.VITE_DEV_SERVER_URL) {
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
-    // win.webContents.openDevTools();
   } else {
     win.loadFile(join(__dirname, '../../dist/index.html'));
   }
