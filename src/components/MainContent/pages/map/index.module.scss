@@ -1,0 +1,321 @@
+@import '@/styles/variables.scss';
+
+.container {
+  display: flex;
+  gap: $spacing-md;
+  height: calc(100vh - #{$topbar-height} - #{$container-padding * 2});
+}
+
+.mapArea {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: $surface-container-lowest;
+  border-radius: $border-radius-lg;
+}
+
+.mapCanvas {
+  position: absolute;
+  inset: 0;
+  transition: transform $transition-base;
+  transform-origin: center center;
+}
+
+.mapGradient {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba($primary-color, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba($secondary-color, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 50% 20%, rgba($tertiary-color, 0.1) 0%, transparent 40%),
+    linear-gradient(135deg, $surface-container-lowest 0%, #0a1626 50%, $background-color 100%);
+}
+
+.marker {
+  position: absolute;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.markerDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: $primary-color;
+  border: 2px solid #fff;
+  box-shadow: 0 0 10px rgba($primary-color, 0.6);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid rgba($primary-color, 0.4);
+  }
+}
+
+.pulse {
+  animation: map-marker-pulse 2s ease-in-out infinite;
+}
+
+@keyframes map-marker-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba($primary-color, 0.6), 0 0 10px rgba($primary-color, 0.6);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba($primary-color, 0), 0 0 20px rgba($primary-color, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba($primary-color, 0), 0 0 10px rgba($primary-color, 0.6);
+  }
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: $surface-container-high;
+  color: $on-surface;
+  padding: 4px 10px;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all $transition-fast;
+  border: 1px solid $glass-border;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: $surface-container-high;
+  }
+
+  &.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.coordinates {
+  position: absolute;
+  top: $spacing-md;
+  left: $spacing-md;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+}
+
+.compass {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba($surface-container-high, 0.9);
+  backdrop-filter: blur($glass-blur);
+  border: 1px solid $glass-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary-color;
+}
+
+.coordInfo {
+  background: rgba($surface-container-high, 0.9);
+  backdrop-filter: blur($glass-blur);
+  border: 1px solid $glass-border;
+  border-radius: $border-radius-md;
+  padding: 6px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  span {
+    font-family: $font-family-mono;
+    font-size: $font-size-xs;
+    color: $on-surface-variant;
+  }
+}
+
+.zoomControls {
+  position: absolute;
+  bottom: $spacing-md;
+  left: $spacing-md;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.zoomBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: $border-radius-md;
+  background: rgba($surface-container-high, 0.9);
+  backdrop-filter: blur($glass-blur);
+  border: 1px solid $glass-border;
+  color: $on-surface;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: rgba($primary-color, 0.15);
+    border-color: rgba($primary-color, 0.4);
+    color: $primary-color;
+  }
+}
+
+.resourcePanel {
+  width: 360px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.panelTitle {
+  font-family: $font-family-display;
+  font-size: $font-size-xl;
+  font-weight: 600;
+  color: $on-surface;
+  margin: 0;
+}
+
+.tabGroup {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: $surface-container;
+  border-radius: $border-radius-full;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: $border-radius-full;
+  background: transparent;
+  color: $on-surface-variant;
+  font-family: $font-family-label;
+  font-size: $font-size-sm;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &.active {
+    background: $primary-color;
+    color: $on-primary;
+  }
+
+  &:hover:not(.active) {
+    background: rgba($primary-color, 0.1);
+    color: $on-surface;
+  }
+}
+
+.resourceList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $border-color;
+    border-radius: $border-radius-full;
+  }
+}
+
+.resourceCard {
+  display: flex;
+  gap: $spacing-md;
+  padding: $spacing-md;
+  border-radius: $border-radius-lg;
+  border: 1px solid $glass-border;
+  transition: all $transition-base;
+
+  &:hover {
+    border-color: rgba($primary-color, 0.3);
+    transform: translateY(-2px);
+  }
+}
+
+.cardIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: $border-radius-md;
+  background: rgba($primary-color, 0.1);
+  border: 1px solid rgba($primary-color, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $primary-color;
+  flex-shrink: 0;
+}
+
+.cardContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  margin-bottom: 4px;
+}
+
+.cardName {
+  font-family: $font-family-display;
+  font-size: $font-size-base;
+  font-weight: 600;
+  color: $on-surface;
+}
+
+.rarityBadge {
+  font-family: $font-family-label;
+  font-size: $font-size-xs;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: $border-radius-full;
+
+  &.common {
+    background: rgba($info-color, 0.15);
+    color: $info-color;
+  }
+
+  &.rare {
+    background: rgba($secondary-color, 0.15);
+    color: $secondary-color;
+  }
+
+  &.epic {
+    background: rgba($tertiary-color, 0.15);
+    color: $tertiary-color;
+  }
+}
+
+.cardDesc {
+  font-size: $font-size-xs;
+  color: $on-surface-variant;
+  margin: 0;
+  line-height: 1.5;
+}
