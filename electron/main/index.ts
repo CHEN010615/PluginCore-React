@@ -25,6 +25,7 @@ function createWindow(): BrowserWindow {
   win.show();
 
   if (process.env.VITE_DEV_SERVER_URL) {
+    win.webContents.openDevTools();
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
     win.loadFile(join(__dirname, '../../dist/index.html'));

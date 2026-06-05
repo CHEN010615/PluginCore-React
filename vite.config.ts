@@ -45,6 +45,7 @@ export default defineConfig({
   server: {
     port: 8100,
   },
+  publicDir: 'src/static',
   build: {
     outDir: 'dist',
     emptyOutDir: true,

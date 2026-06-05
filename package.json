@@ -10,7 +10,8 @@
     "init": "pnpm install && node node_modules/.pnpm/electron@40.8.0/node_modules/electron/install.js",
     "dev": "vite",
     "build": "vite build && electron-builder",
-    "build:vite": "vite build"
+    "build:vite": "vite build",
+    "download:map-assets": "node download-map-assets.cjs"
   },
   "dependencies": {
     "electron-store": "^11.0.2",
