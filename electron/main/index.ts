@@ -4,11 +4,21 @@ import { registerIPCHandlers, setMainWindow } from './api'
 import { createTray } from './tray'
 
 function createWindow(): BrowserWindow {
+  const isMac = process.platform === 'darwin'
   const win = new BrowserWindow({
     width: 1600,
     height: 900,
-    resizable: false,
-    frame: false,
+    resizable: true,
+    minWidth: 1120,
+    minHeight: 720,
+    ...(isMac
+      ? {
+          titleBarStyle: 'hiddenInset' as const,
+          trafficLightPosition: { x: 14, y: 12 }
+        }
+      : {
+          frame: false
+        }),
     transparent: false,
     backgroundColor: '#081425',
     webPreferences: {
@@ -25,7 +35,7 @@ function createWindow(): BrowserWindow {
   win.show();
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
     win.loadURL(process.env.VITE_DEV_SERVER_URL);
   } else {
     win.loadFile(join(__dirname, '../../dist/index.html'));
@@ -48,5 +58,7 @@ app.on("activate", () => {
     createWindow();
   }
 }).on("window-all-closed", () => {
-  app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });

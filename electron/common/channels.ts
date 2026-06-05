@@ -19,6 +19,7 @@ export const CHANNELS = {
   WINDOW_MAXIMIZE: 'window:maximize',
   WINDOW_UNMAXIMIZE: 'window:unmaximize',
   WINDOW_IS_MAXIMIZED: 'window:is-maximized',
+  WINDOW_STATE_CHANGED: 'window:state-changed',
   WINDOW_CLOSE: 'window:close'
 } as const
 

@@ -18,6 +18,10 @@ $titlebar-height: 36px;
   user-select: none;
 }
 
+.titlebarMac {
+  justify-content: flex-start;
+}
+
 .dragRegion {
   flex: 1;
   height: 100%;
@@ -25,6 +29,10 @@ $titlebar-height: 36px;
   align-items: center;
   padding-left: $spacing-md;
   -webkit-app-region: drag;
+}
+
+.titlebarMac .dragRegion {
+  padding-left: 86px;
 }
 
 .titleContent {

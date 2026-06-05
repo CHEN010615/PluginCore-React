@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron'
 import type { Channels } from '../common/channels'
 
 contextBridge.exposeInMainWorld('electronAPI', {
+  platform: process.platform,
   invoke: (channel: Channels, ...args: unknown[]) => {
     return ipcRenderer.invoke(channel, ...args)
   },

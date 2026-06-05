@@ -1,6 +1,7 @@
 import type { Channels } from '@electron/common/channels'
 
 export interface ElectronAPI {
+  platform: string
   invoke: (channel: Channels, ...args: unknown[]) => Promise<unknown>
   send: (channel: Channels, ...args: unknown[]) => void
   on: (channel: Channels, callback: (...args: unknown[]) => void) => () => void

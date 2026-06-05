@@ -9,6 +9,23 @@ let mainWindow: BrowserWindow | null = null
 
 export function setMainWindow(win: BrowserWindow) {
   mainWindow = win
+
+  const sendWindowState = () => {
+    if (win.isDestroyed()) {
+      return
+    }
+
+    win.webContents.send(CHANNELS.WINDOW_STATE_CHANGED, {
+      isMaximized: win.isMaximized(),
+      isFullScreen: win.isFullScreen()
+    })
+  }
+
+  win.webContents.once('did-finish-load', sendWindowState)
+  win.on('maximize', sendWindowState)
+  win.on('unmaximize', sendWindowState)
+  win.on('enter-full-screen', sendWindowState)
+  win.on('leave-full-screen', sendWindowState)
 }
 
 // 注册所有 IPC 处理器
