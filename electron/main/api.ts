@@ -1,9 +1,32 @@
-import { ipcMain } from 'electron'
+import { ipcMain, BrowserWindow } from 'electron'
 import os from 'os'
 import { CHANNELS } from '../common/channels'
 
 const Store = require('electron-store').default
 const store = new Store()
+
+let mainWindow: BrowserWindow | null = null
+
+export function setMainWindow(win: BrowserWindow) {
+  mainWindow = win
+
+  const sendWindowState = () => {
+    if (win.isDestroyed()) {
+      return
+    }
+
+    win.webContents.send(CHANNELS.WINDOW_STATE_CHANGED, {
+      isMaximized: win.isMaximized(),
+      isFullScreen: win.isFullScreen()
+    })
+  }
+
+  win.webContents.once('did-finish-load', sendWindowState)
+  win.on('maximize', sendWindowState)
+  win.on('unmaximize', sendWindowState)
+  win.on('enter-full-screen', sendWindowState)
+  win.on('leave-full-screen', sendWindowState)
+}
 
 // 注册所有 IPC 处理器
 export function registerIPCHandlers() {
@@ -78,5 +101,26 @@ export function registerIPCHandlers() {
       uptime: os.uptime(),
       loadavg: os.loadavg()
     }
+  })
+
+  // 窗口控制相关
+  ipcMain.on(CHANNELS.WINDOW_MINIMIZE, () => {
+    mainWindow?.minimize()
+  })
+
+  ipcMain.on(CHANNELS.WINDOW_MAXIMIZE, () => {
+    mainWindow?.maximize()
+  })
+
+  ipcMain.on(CHANNELS.WINDOW_UNMAXIMIZE, () => {
+    mainWindow?.unmaximize()
+  })
+
+  ipcMain.handle(CHANNELS.WINDOW_IS_MAXIMIZED, () => {
+    return mainWindow?.isMaximized() ?? false
+  })
+
+  ipcMain.on(CHANNELS.WINDOW_CLOSE, () => {
+    mainWindow?.close()
   })
 }

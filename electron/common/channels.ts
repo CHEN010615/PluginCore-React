@@ -12,7 +12,15 @@ export const CHANNELS = {
   // 系统信息
   SYSTEM_OS: 'system:os',
   SYSTEM_NODE: 'system:node',
-  SYSTEM_PERFORMANCE: 'system:performance'
+  SYSTEM_PERFORMANCE: 'system:performance',
+
+  // 窗口控制
+  WINDOW_MINIMIZE: 'window:minimize',
+  WINDOW_MAXIMIZE: 'window:maximize',
+  WINDOW_UNMAXIMIZE: 'window:unmaximize',
+  WINDOW_IS_MAXIMIZED: 'window:is-maximized',
+  WINDOW_STATE_CHANGED: 'window:state-changed',
+  WINDOW_CLOSE: 'window:close'
 } as const
 
 // 从 CHANNELS 对象提取通道类型

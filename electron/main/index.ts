@@ -1,14 +1,23 @@
 import { app, BrowserWindow } from 'electron'
 import { join } from 'path'
-import { registerIPCHandlers } from './api'
+import { registerIPCHandlers, setMainWindow } from './api'
 import { createTray } from './tray'
 
 function createWindow(): BrowserWindow {
+  const isMac = process.platform === 'darwin'
   const win = new BrowserWindow({
     width: 1280,
     height: 850,
     minWidth: 960,
     minHeight: 600,
+    ...(isMac
+      ? {
+          titleBarStyle: 'hiddenInset' as const,
+          trafficLightPosition: { x: 14, y: 12 }
+        }
+      : {
+          frame: false
+        }),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       nodeIntegration: false,
@@ -17,6 +26,8 @@ function createWindow(): BrowserWindow {
       webviewTag: true
     }
   });
+
+  setMainWindow(win)
 
   win.show();
 
@@ -44,5 +55,7 @@ app.on("activate", () => {
     createWindow();
   }
 }).on("window-all-closed", () => {
-  app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });

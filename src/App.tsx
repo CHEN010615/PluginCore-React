@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Box, Typography, Paper, Alert } from '@mui/material'
 import { Computer, Storage, Info } from '@mui/icons-material'
+import TitleBar from './components/TitleBar/TitleBar'
 
 function App() {
   const [osInfo, setOsInfo] = useState<{ platform: string; arch: string; version: string; release: string; type: string } | null>(null)
@@ -56,7 +57,9 @@ function App() {
   }, [])
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+    <>
+      <TitleBar />
+      <Box sx={{ px: 3, pb: 3, pt: 7, maxWidth: 1200, mx: 'auto' }}>
       {/* 标题区域 */}
       <Box sx={{ mb: 4, textAlign: 'center' }}>
         <Typography variant="h3" component="h1" gutterBottom fontWeight="bold" color="primary">
@@ -211,7 +214,8 @@ function App() {
           </Typography>
         </Box>
       </Paper>
-    </Box>
+      </Box>
+    </>
   )
 }
 
