@@ -1,6 +1,6 @@
 import { Search, Notifications, Settings } from '@mui/icons-material'
 import styles from './TopBar.module.scss'
-import logoImg from '@/static/img/logo.png'
+import logoImg from '@/static/img/common/logo.png'
 
 interface TopBarProps {
   activeTab?: string
