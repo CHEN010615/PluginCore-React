@@ -8,8 +8,8 @@ function createWindow(): BrowserWindow {
   const win = new BrowserWindow({
     width: 1280,
     height: 850,
-    minWidth: 960,
-    minHeight: 600,
+    minWidth: 1180,
+    minHeight: 850,
     ...(isMac
       ? {
           titleBarStyle: 'hiddenInset' as const,

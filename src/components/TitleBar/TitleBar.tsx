@@ -23,6 +23,7 @@ const isWindowState = (value: unknown): value is WindowState => {
 
 const TitleBar = () => {
   const [isMaximized, setIsMaximized] = useState(false)
+  const [isFullScreen, setIsFullScreen] = useState(false)
   const api = window.electronAPI
   const isMac = api.platform === 'darwin'
 
@@ -39,7 +40,8 @@ const TitleBar = () => {
 
     const removeWindowStateListener = api.on(CHANNELS.WINDOW_STATE_CHANGED, (state) => {
       if (isWindowState(state)) {
-        setIsMaximized(state.isMaximized || state.isFullScreen)
+        setIsMaximized(state.isMaximized)
+        setIsFullScreen(state.isFullScreen)
       }
     })
 
@@ -55,6 +57,10 @@ const TitleBar = () => {
     }
   }
   const handleClose = () => api.close()
+
+  if (isMac && isFullScreen) {
+    return null
+  }
 
   return (
     <header className={`${styles.titlebar} ${isMac ? styles.titlebarMac : ''}`}>
